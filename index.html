@@ -469,6 +469,12 @@
       border: 1px solid var(--border);
       object-fit: cover; aspect-ratio: 16/9;
     }
+    .modal-images:has(img:only-child) {
+      grid-template-columns: 1fr;
+    }
+    .modal-images:has(img:only-child) img {
+      aspect-ratio: 16/7;
+    }
     .modal-link {
       display: inline-flex; align-items: center; gap: .5rem;
       padding: .7rem 1.6rem;
