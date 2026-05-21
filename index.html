@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portfolio — Julien</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    /* ─── Variables ─────────────────────────────────── */
+    :root {
+      --bg:        #0d0d0d;
+      --bg2:       #141414;
+      --bg3:       #1a1a1a;
+      --orange:    #ff6b1a;
+      --orange2:   #ff8c42;
+      --orange-dim:#ff6b1a33;
+      --text:      #e8e0d5;
+      --muted:     #7a7068;
+      --border:    #2a2520;
+      --mono:      'Space Mono', monospace;
+      --display:   'Syne', sans-serif;
+      --body:      'Inter', 'Segoe UI', system-ui, sans-serif;
+    }
+
+    /* ─── Reset ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      font-size: 15px;
+      line-height: 1.75;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ─── Custom cursor ──────────────────────────────── */
+    .cursor {
+      position: fixed; top: 0; left: 0; z-index: 9999;
+      width: 12px; height: 12px;
+      background: var(--orange);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: transform .1s ease, width .2s, height .2s, background .2s;
+      mix-blend-mode: difference;
+    }
+    .cursor.big { width: 40px; height: 40px; background: var(--orange2); }
+
+    /* ─── Noise overlay ──────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: .03;
+      pointer-events: none;
+    }
+
+    /* ─── Nav ────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.4rem 4rem;
+      background: linear-gradient(to bottom, var(--bg) 60%, transparent);
+    }
+    .nav-logo {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--orange);
+      letter-spacing: -.02em;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .8rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--orange); }
+
+    /* ─── Sections common ────────────────────────────── */
+    section {
+      position: relative; z-index: 1;
+      padding: 7rem 4rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .section-label {
+      font-size: .72rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp .6s forwards;
+    }
+    h2 {
+      font-family: var(--display);
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 3rem;
+      opacity: 0;
+      animation: fadeUp .7s .1s forwards;
+    }
+
+    /* ─── Hero ───────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding-top: 8rem;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: .6rem;
+      font-size: .75rem; letter-spacing: .15em; text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 2rem;
+      opacity: 0; animation: fadeUp .5s .1s forwards;
+    }
+    .hero-tag::before {
+      content: ''; display: block;
+      width: 30px; height: 1px; background: var(--orange);
+    }
+    .hero-name {
+      font-family: var(--display);
+      font-size: clamp(2.5rem, 7vw, 5.5rem);
+      font-weight: 800;
+      line-height: 1.0;
+      letter-spacing: -.02em;
+      color: var(--text);
+      opacity: 0; animation: fadeUp .6s .2s forwards;
+    }
+    .hero-name span { color: var(--orange); }
+    .hero-sub {
+      margin-top: 2rem;
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 480px;
+      opacity: 0; animation: fadeUp .6s .35s forwards;
+    }
+    .hero-cta {
+      margin-top: 3rem;
+      display: flex; gap: 1.2rem; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp .6s .5s forwards;
+    }
+    .btn {
+      display: inline-block;
+      padding: .8rem 2rem;
+      font-family: var(--mono);
+      font-size: .82rem;
+      letter-spacing: .08em;
+      text-decoration: none;
+      border-radius: 3px;
+      transition: all .2s;
+    }
+    .btn-primary {
+      background: var(--orange);
+      color: #0d0d0d;
+      font-weight: 700;
+    }
+    .btn-primary:hover { background: var(--orange2); transform: translateY(-2px); }
+    .btn-ghost {
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .btn-ghost:hover { border-color: var(--orange); color: var(--orange); }
+
+    .hero-scroll {
+      margin-top: 5rem;
+      display: flex; align-items: center; gap: 1rem;
+      color: var(--muted); font-size: .72rem; letter-spacing: .15em;
+      text-transform: uppercase;
+      opacity: 0; animation: fadeUp .6s .7s forwards;
+    }
+    .hero-scroll::after {
+      content: '';
+      display: block; width: 60px; height: 1px; background: var(--border);
+    }
+
+    /* ─── About ──────────────────────────────────────── */
+    #about { border-top: 1px solid var(--border); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    .about-text p { color: var(--muted); margin-bottom: 1.2rem; }
+    .about-text p strong { color: var(--text); }
+    .about-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2rem;
+    }
+    .about-card h3 {
+      font-family: var(--display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      color: var(--orange);
+    }
+    .skill-list { list-style: none; display: flex; flex-direction: column; gap: .5rem; }
+    .skill-list li {
+      display: flex; align-items: center; gap: .8rem;
+      font-size: .82rem; color: var(--muted);
+    }
+    .skill-list li::before { content: '›'; color: var(--orange); font-size: 1rem; }
+
+    /* ─── Projects ───────────────────────────────────── */
+    #projects { border-top: 1px solid var(--border); }
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .project-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2rem;
+      transition: border-color .25s, transform .25s, opacity .35s, filter .35s;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .project-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 3px; height: 0;
+      background: var(--orange);
+      transition: height .3s;
+    }
+    .project-card:hover { border-color: var(--border); transform: translateY(-4px); }
+    .project-card:hover::before { height: 100%; }
+    .project-num {
+      font-size: .72rem; color: var(--orange); letter-spacing: .1em;
+      margin-bottom: 1rem;
+    }
+    .project-card h3 {
+      font-family: var(--display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: .6rem;
+    }
+    .project-card p { color: var(--muted); font-size: .85rem; margin-bottom: 1.5rem; }
+    .project-tags { display: flex; gap: .5rem; flex-wrap: wrap; }
+    .tag {
+      padding: .2rem .7rem;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      font-size: .7rem;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+
+    /* ─── Parcours ───────────────────────────────────── */
+    #parcours { border-top: 1px solid var(--border); }
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 1px; background: var(--border);
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 3rem;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute; left: -2.35rem; top: .4rem;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 2px solid var(--orange);
+      box-shadow: 0 0 0 4px var(--orange-dim);
+    }
+    .timeline-date {
+      font-size: .72rem; color: var(--orange);
+      letter-spacing: .12em; text-transform: uppercase;
+      margin-bottom: .3rem;
+    }
+    .timeline-item h3 {
+      font-family: var(--display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: .2rem;
+    }
+    .timeline-item .school {
+      font-size: .82rem; color: var(--muted); margin-bottom: .5rem;
+    }
+    .timeline-item p { color: var(--muted); font-size: .85rem; }
+
+    /* ─── Contact ────────────────────────────────────── */
+    #contact {
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    #contact h2 { margin-bottom: 1rem; }
+    #contact .sub {
+      color: var(--muted); max-width: 400px; margin: 0 auto 3rem;
+    }
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .contact-link {
+      display: flex; align-items: center; gap: .6rem;
+      padding: .9rem 1.8rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: .82rem;
+      letter-spacing: .06em;
+      transition: all .2s;
+    }
+    .contact-link:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+      background: var(--orange-dim);
+    }
+    .contact-link svg { width: 18px; height: 18px; }
+
+    /* ─── Footer ─────────────────────────────────────── */
+    footer {
+      position: relative; z-index: 1;
+      padding: 2rem 4rem;
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: .72rem; color: var(--muted);
+    }
+
+    /* ─── Project timeline nav ───────────────────────── */
+    .ptl-nav {
+      margin-bottom: 3rem;
+    }
+    .ptl-track {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      justify-content: flex-start;
+    }
+    .ptl-line {
+      position: absolute;
+      left: 12px; right: 12px;
+      height: 2px;
+      background: var(--border);
+      z-index: 0;
+    }
+    .ptl-progress {
+      position: absolute;
+      left: 12px;
+      height: 2px;
+      background: var(--orange);
+      z-index: 1;
+      transition: width .4s ease;
+      width: 0%;
+      /* La largeur est calculée en JS sur la distance entre les dots */
+      transform-origin: left center;
+    }
+    .ptl-dot {
+      position: relative; z-index: 2;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      width: 24px; height: 24px;
+      cursor: none;
+      transition: border-color .25s, background .25s, transform .25s;
+      flex-shrink: 0;
+      margin-right: 100px;
+    }
+    .ptl-dot:last-child { margin-right: 0; }
+    .ptl-dot:hover { border-color: var(--orange2); transform: scale(1.15); }
+    .ptl-dot.active {
+      background: var(--orange);
+      border-color: var(--orange);
+      box-shadow: 0 0 0 5px var(--orange-dim);
+    }
+    .ptl-year {
+      position: absolute;
+      top: 130%;
+      left: 50%; transform: translateX(-50%);
+      font-size: .72rem;
+      letter-spacing: .1em;
+      color: var(--muted);
+      white-space: nowrap;
+      font-family: var(--mono);
+      transition: color .25s;
+      pointer-events: none;
+    }
+    .ptl-dot.active .ptl-year { color: var(--orange); }
+
+    /* card dimmed state */
+    .project-card.dimmed {
+      opacity: .06;
+      filter: grayscale(1) blur(1px);
+      transform: scale(.96);
+      pointer-events: none;
+    }
+
+    /* ─── Modal projet ───────────────────────────────── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,.85);
+      backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s;
+      padding: 2rem;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      width: 100%; max-width: 820px;
+      max-height: 88vh;
+      overflow-y: auto;
+      transform: translateY(30px) scale(.97);
+      transition: transform .35s ease;
+      position: relative;
+    }
+    .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+    .modal-close {
+      position: sticky; top: 0;
+      display: flex; justify-content: flex-end;
+      padding: 1.2rem 1.4rem .5rem;
+      background: var(--bg2);
+      z-index: 2;
+    }
+    .modal-close button {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: .8rem;
+      cursor: none;
+      padding: .35rem .9rem;
+      transition: color .2s, border-color .2s;
+    }
+    .modal-close button:hover { color: var(--orange); border-color: var(--orange); }
+    .modal-body { padding: 0 2.5rem 2.5rem; }
+    .modal-num { font-size: .72rem; color: var(--orange); letter-spacing: .12em; margin-bottom: .6rem; }
+    .modal-title {
+      font-family: var(--display);
+      font-size: 1.8rem; font-weight: 800;
+      margin-bottom: .8rem;
+    }
+    .modal-tags { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.8rem; }
+    .modal-desc { color: var(--muted); line-height: 1.8; margin-bottom: 2rem; }
+    .modal-desc p { margin-bottom: 1rem; }
+    .modal-images {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .modal-images img {
+      width: 100%; border-radius: 6px;
+      border: 1px solid var(--border);
+      object-fit: cover; aspect-ratio: 16/9;
+    }
+    .modal-link {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .7rem 1.6rem;
+      background: var(--orange);
+      color: #0d0d0d;
+      font-weight: 700;
+      font-size: .82rem;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background .2s, transform .2s;
+    }
+    .modal-link:hover { background: var(--orange2); transform: translateY(-2px); }
+    .modal-link svg { width: 15px; height: 15px; }
+
+    /* ─── Animations ─────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── Responsive ─────────────────────────────────── */
+    @media (max-width: 768px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .nav-links { gap: 1.5rem; }
+      section { padding: 5rem 1.5rem; }
+      .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+      footer { flex-direction: column; gap: 1rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cursor -->
+  <div class="cursor" id="cursor"></div>
+
+  <!-- Nav -->
+  <nav>
+    <a href="#" class="nav-logo" style="text-decoration:none;">Glouche-Picard.Julien</a>
+    <ul class="nav-links">
+      <li><a href="#about">À propos</a></li>
+      <li><a href="#projects">Projets</a></li>
+      <li><a href="#parcours">Parcours</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── Hero ── -->
+  <section id="hero">
+    <div class="hero-tag">Étudiant en informatique</div>
+    <h1 class="hero-name">
+      Salut, moi<br/>c'est <span>Julien</span>.
+    </h1>
+    <p class="hero-sub">
+      Actuellement élève à l'IUT de Marne la Vallée, j'apprends chaque jour et je cherche à progresser.
+    </p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-primary">Voir mes projets</a>
+      <a href="#contact" class="btn btn-ghost">Me contacter</a>
+    </div>
+    <div class="hero-scroll">scroll</div>
+  </section>
+
+  <!-- ── About ── -->
+  <section id="about">
+    <div class="section-label">// 01 — À propos</div>
+    <h2>Qui suis-je ?</h2>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>
+          Je m'appelle <strong>Julien Glouche--Picard</strong>, étudiant en première année BUT informatique à <strong>L'IUT de Marne la Vallée/Gustave Eiffel</strong>.
+        </p>
+        <p>
+          Curieux et motivé, je cherche a apprendre et m'améliorer. J'aime comprendre comment les choses fonctionnent sous le capot.
+        </p>
+        <p>
+          En dehors du code, je suis passionné par le monde ferroviaire, l'aéronautique ou encore le bricolage.
+        </p>
+      </div>
+      <div class="about-card">
+        <h3>Compétences actuelles</h3>
+        <ul class="skill-list">
+          <li>Python</li>
+          <li>C </li>
+          <li>HTML & CSS</li>
+          <li>Java / JavaFX</li>
+          <li>PHP / SQL</li>
+          <li>Algorithmique de base</li>
+          <li>Linux / Terminal</li>
+          <!-- Ajoute tes vraies compétences ici -->
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Projects ── -->
+  <section id="projects">
+    <div class="section-label">// 02 — Projets</div>
+    <h2>Ce que j'ai construit.</h2>
+
+    <!-- Timeline nav : 2024 à gauche → 2026 à droite -->
+    <div class="ptl-nav">
+      <div class="ptl-track">
+        <div class="ptl-line"></div>
+        <div class="ptl-progress" id="ptlProgress"></div>
+        <button class="ptl-dot active" data-year="2025">
+          <span class="ptl-year">2025</span>
+        </button>
+        <button class="ptl-dot" data-year="2026">
+          <span class="ptl-year">2026</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Cards -->
+    <div class="projects-grid" id="projectsGrid">
+
+      <div class="project-card" data-project="1" data-year="2025">
+        <div class="project-num">01</div>
+        <h3>Projet de fin d'année de Terminale</h3>
+        <p>Système de capture de mouvements de la main transmis sans fil à une prothèse, pour des opérations chirurgicales à distance.</p>
+        <div class="project-tags">
+          <span class="tag">Arduino</span>
+          <span class="tag">C</span>
+        </div>
+      </div>
+
+      <div class="project-card" data-project="0" data-year="2026">
+        <div class="project-num">02</div>
+        <h3>Médiation Culturelle et Numérique</h3>
+        <p>Site web réalisé en groupe en partenariat avec l'UNESCO, présentant le patrimoine naturel de la Jungfrau-Aletsch.</p>
+        <div class="project-tags">
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+        </div>
+      </div>
+
+      <div class="project-card" data-project="2" data-year="2026">
+        <div class="project-num">03</div>
+        <h3>Wall is You</h3>
+        <p>Jeu Python dans lequel vous incarnez le donjon : faites pivoter les murs pour guider un aventurier vers les dragons.</p>
+        <div class="project-tags">
+          <span class="tag">Python</span>
+        </div>
+      </div>
+
+      <div class="project-card" data-project="3" data-year="2026">
+        <div class="project-num">04</div>
+        <h3>Schtroumpf Village</h3>
+        <p>Jeu de gestion dans lequel vous gérez un village de Schtroumpfs : ressources, habitants et développement du village.</p>
+        <div class="project-tags">
+          <span class="tag">Java</span>
+          <span class="tag">JavaFX</span>        </div>
+      </div>
+
+      <div class="project-card" data-project="4" data-year="2026">
+        <div class="project-num">05</div>
+        <h3>Senior Connect</h3>
+        <p>Site web permettant de mettre en relation des personnes âgées pour rejoindre des activités communes, connecté à une base de données via PHP.</p>
+        <div class="project-tags">
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+          <span class="tag">PHP</span>
+        </div>
+      </div>
+
+      <div class="project-card" data-project="5" data-year="2026">
+        <div class="project-num">06</div>
+        <h3>Gestion de Cimetière</h3>
+        <p>Application web de gestion d'un cimetière municipal, connectée à une base de données via PHP.</p>
+        <div class="project-tags">
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+          <span class="tag">PHP</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Modal ── -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modal">
+      <div class="modal-close"><button id="modalClose">✕ Fermer</button></div>
+      <div class="modal-body">
+        <div class="modal-num" id="mNum"></div>
+        <div class="modal-title" id="mTitle"></div>
+        <div class="modal-tags" id="mTags"></div>
+        <div class="modal-desc" id="mDesc"></div>
+        <div class="modal-images" id="mImages"></div>
+        <div id="mLink"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Parcours ── -->
+  <section id="parcours">
+    <div class="section-label">// 03 — Parcours</div>
+    <h2>Mon chemin.</h2>
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <div class="timeline-date">2026 — Aujourd'hui</div>
+        <h3>BUT informatique - 1 ere année</h3>
+        <div class="school">IUT de Marne la Vallée/ Gustave Eiffel - Champs sur Marne</div>
+        <p>Algorithmique, programmation impérative, bases des systèmes, mathématiques pour l'informatique…</p>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-date">2021 — 2024</div>
+        <h3>Baccalauréat scientifique — [Mention Bien]</h3>
+        <div class="school">Lycée Polyvalent Clément Ader — Tournan-en-Brie</div>
+        <p>Bac STI2D : Spécialité Système Information Numérique. Obtenu avec la mention Bien. </br>
+	J'ai appris les base de la programation et de l'informatique</p>
+      </div>
+
+
+    </div>
+  </section>
+
+  <!-- ── Contact ── -->
+  <section id="contact">
+    <div class="section-label">// 04 — Contact</div>
+    <h2>On se parle ?</h2>
+    <p class="sub">N'hésite pas à me contacter pour un projet, une question ou juste pour échanger.</p>
+    <div class="contact-links">
+
+      <a class="contact-link" href="mailto:julien.glouchepicard@gmail.com">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+        </svg>
+        Email
+      </a>
+
+      <a class="contact-link" href="https://www.linkedin.com/in/julien-glouche-picard-3576583aa/" target="_blank">
+        <svg fill="currentColor" viewBox="0 0 24 24">
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+          <rect x="2" y="9" width="4" height="12"/>
+          <circle cx="4" cy="4" r="2"/>
+        </svg>
+        LinkedIn
+      </a>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <span>© 2025 [Julien Glouche--Picard]</span>
+    <span>Fait avec ❤️ &amp; beaucoup de café</span>
+  </footer>
+
+  <!-- ── Scripts ── -->
+  <script>
+    // ── Custom cursor ──
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top  = e.clientY + 'px';
+    });
+    document.querySelectorAll('a, button, .project-card').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('big'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('big'));
+    });
+
+    // ── Fade-in on scroll ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.project-card, .timeline-item, .about-card').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(30px)';
+      el.style.transition = 'opacity .6s ease, transform .6s ease';
+      observer.observe(el);
+    });
+
+    // ── Project data ──
+    const projects = [
+      {
+        num: '01',
+        title: 'Médiation Culturelle et Numérique',
+        tags: ['HTML', 'CSS'],
+        desc: `
+          <p><strong>Médiation Culturelle et Numérique</strong> est un site web réalisé en groupe dans le cadre d'un partenariat avec l'UNESCO.</p>
+          <p>Le site présente un patrimoine naturel inscrit au patrimoine mondial de l'UNESCO : le massif de la Jungfrau-Aletsch, en Suisse. Il a été conçu pour être pédagogique et accessible, avec une mise en page soignée et une navigation intuitive.</p>
+          <p>Ce projet m'a permis d'apprendre à travailler en équipe sur un projet web, à structurer un site multi-pages en HTML/CSS, et à respecter des contraintes éditoriales et visuelles précises.</p>
+        `,
+        images: [
+          'https://placehold.co/800x450/1a1a1a/ff6b1a?text=Page+d\'accueil',
+          'https://placehold.co/800x450/141414/ff8c42?text=Page+patrimoine'
+        ],
+        link: 'https://jungfrau-aletsch.netlify.app'
+      },
+      {
+        num: '01 — 2024',
+        title: 'Projet de fin d\'année de Terminale',
+        tags: ['Arduino', 'C'],
+        desc: `
+          <p><strong>Projet de fin d'année de Terminale</strong>, réalisé en groupe de deux.</p>
+          <p>L'objectif était de capter en temps réel les positions des doigts et de la main d'une personne, puis de les transmettre en <strong>wireless</strong> à une prothèse de main. Le but final est de permettre des <strong>opérations chirurgicales à distance</strong>, le chirurgien contrôlant la prothèse à distance avec ses propres gestes.</p>
+          <p>Le projet m'a permis de découvrir la programmation embarquée en C sur Arduino, la communication sans fil entre deux modules, ainsi que la gestion de capteurs de mouvement.</p>
+        `,
+        images: [],
+        link: null
+      },
+      {
+        num: '03',
+        title: 'Wall is You',
+        tags: ['Python'],
+        desc: `
+          <p><strong>Wall is You</strong> est un jeu en Python développé en solo dans le cadre de mes études à l'IUT.</p>
+          <p>Dans ce jeu, vous incarnez le donjon lui-même : vous pouvez faire pivoter les murs de la grille pour créer ou bloquer des chemins. L'objectif est de guider un aventurier jusqu'aux dragons qu'il doit affronter — ou de l'en empêcher selon vos choix.</p>
+          <p>Ce projet m'a permis de pratiquer la programmation orientée objet, la gestion d'une grille 2D, et la logique de jeu en Python pur, sans bibliothèque externe.</p>
+        `,
+        images: [
+          'https://placehold.co/800x450/1a1a1a/ff6b1a?text=Capture+du+jeu',
+          'https://placehold.co/800x450/141414/ff8c42?text=Grille+de+jeu'
+        ],
+        link: null
+      },
+      {
+        num: '04',
+        title: 'Schtroumpf Village',
+        tags: ['Java', 'JavaFX'],
+        desc: `
+          <p><strong>Schtroumpf Village</strong> est un jeu de gestion développé en Java et JavaFX, réalisé en équipe dans le cadre de mes études.</p>
+          <p>Le joueur gère un village de Schtroumpfs : récolte de ressources, gestion des habitants, et développement progressif du village.</p>
+          <p>Le projet a été structuré selon le patron d'architecture <strong>Modèle-Vue-Contrôleur (MVC)</strong>, ce qui nous a permis de séparer clairement la logique métier, l'interface graphique et les interactions utilisateur. Travailler en équipe sur ce projet m'a également appris à coordonner le développement et à utiliser Git de manière collaborative.</p>
+        `,
+        images: [],
+        link: null
+      },
+      {
+        num: '05',
+        title: 'Senior Connect',
+        tags: ['HTML', 'CSS', 'PHP'],
+        desc: `
+          <p><strong>Senior Connect</strong> est un site web réalisé dans le cadre d'un projet de gestion de cahier des charges, mettant en pratique les méthodes de gestion de projet apprises en cours.</p>
+          <p>Le site connecte une interface HTML/CSS à une base de données via PHP. Son objectif est de <strong>mettre en relation des personnes âgées</strong> et de leur permettre de rejoindre des activités communes : sorties, ateliers, événements locaux.</p>
+          <p>Ce projet m'a permis de découvrir le développement back-end avec PHP, la gestion d'une base de données relationnelle, et le respect d'un cahier des charges dans un contexte de projet structuré.</p>
+        `,
+        images: ['proj-r203.png'],
+        link: null
+      },
+      {
+        num: '06',
+        title: 'Gestion de Cimetière',
+        tags: ['HTML', 'CSS', 'PHP'],
+        desc: `
+          <p><strong>Gestion de Cimetière</strong> est un projet de base de données réalisé dans le cadre de mes études, consistant à connecter un site web à une base de données pour gérer le cimetière d'une ville.</p>
+          <p>L'application permet de gérer les concessions, les défunts, les emplacements et les informations administratives associées, via une interface web HTML/CSS reliée à une base de données via PHP.</p>
+          <p>Ce projet m'a permis de consolider mes compétences en modélisation de base de données relationnelle, en SQL, et en intégration PHP.</p>
+        `,
+        images: [],
+        link: null
+      }
+    ];
+
+    // ── Modal logic ──
+    const overlay  = document.getElementById('modalOverlay');
+    const mNum     = document.getElementById('mNum');
+    const mTitle   = document.getElementById('mTitle');
+    const mTags    = document.getElementById('mTags');
+    const mDesc    = document.getElementById('mDesc');
+    const mImages  = document.getElementById('mImages');
+    const mLink    = document.getElementById('mLink');
+
+    function openModal(idx) {
+      const p = projects[idx];
+      mNum.textContent  = p.num;
+      mTitle.textContent = p.title;
+      mTags.innerHTML   = p.tags.map(t => `<span class="tag">${t}</span>`).join('');
+      mDesc.innerHTML   = p.desc;
+
+      if (p.images && p.images.length) {
+        mImages.style.display = 'grid';
+        mImages.innerHTML = p.images.map(src =>
+          `<img src="${src}" alt="Aperçu du projet" loading="lazy"/>`
+        ).join('');
+      } else {
+        mImages.style.display = 'none';
+      }
+
+      if (p.link) {
+        mLink.innerHTML = `<a class="modal-link" href="${p.link}" target="_blank">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          Voir le site
+        </a>`;
+      } else {
+        mLink.innerHTML = '';
+      }
+
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.project-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const idx = parseInt(card.dataset.project);
+        openModal(idx);
+      });
+    });
+
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+    // ── Project timeline ──
+    const ptlDots  = document.querySelectorAll('.ptl-dot');
+    const ptlProg  = document.getElementById('ptlProgress');
+    const allCards = document.querySelectorAll('.project-card');
+    let activeYear = null;
+
+    function clearYear() {
+      activeYear = null;
+      ptlDots.forEach(d => d.classList.remove('active'));
+      ptlProg.style.width = '0%';
+      allCards.forEach(card => {
+        card.classList.remove('dimmed');
+        card.style.pointerEvents = 'auto';
+      });
+    }
+
+    function activateYear(year) {
+      activeYear = year;
+      ptlDots.forEach(d => d.classList.toggle('active', d.dataset.year === year));
+
+      // Progress: calcul en px pour s'arrêter pile au centre du dot actif
+      const dotsArr = [...ptlDots];
+      const idx = dotsArr.findIndex(d => d.dataset.year === year);
+      const activeDot = dotsArr[idx];
+      const trackEl = document.querySelector('.ptl-track');
+      const trackLeft = trackEl.getBoundingClientRect().left;
+      const dotCenter = activeDot.getBoundingClientRect().left + activeDot.offsetWidth / 2;
+      ptlProg.style.width = (dotCenter - trackLeft) + 'px';
+
+      allCards.forEach(card => {
+        const match = card.dataset.year === year;
+        card.classList.toggle('dimmed', !match);
+        card.style.pointerEvents = match ? 'auto' : 'none';
+      });
+    }
+
+    ptlDots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        if (activeYear === dot.dataset.year) {
+          clearYear();
+        } else {
+          activateYear(dot.dataset.year);
+        }
+      });
+    });
+
+    // Init: no year selected
+    clearYear();
+
+    // Re-register cursor hover for dots
+    ptlDots.forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('big'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('big'));
+    });
+
+  </script>
+</body>
+</html>
